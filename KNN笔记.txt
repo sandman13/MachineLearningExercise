@@ -1,0 +1,22 @@
+一、numpy.tile(A,B)函数
+numpy.tile([0,0],5) #在列方向上重复5次，行方向默认一次
+结果：array([0,0,0,0,0,0,0,0,0,0])
+numpy.tile([0,0],(3,1)) #在行方向上重复3次，列方向一次
+
+二、python3中只用items（），不用iteritems
+
+三、strip()：去除首尾回车符
+
+四、在python3中执行reload（module）时：
+ import importlib
+ importlib.reload(module)
+
+五、minVals = dataSet.min(0)
+取出每一列的最小值，即每一个特征的最小值。
+maxVals = dataSet.max(0)
+取出每一列的最大值，即每一个特征的最大值。
+.min(0)和.max(0)里的0代表按列取最小值和最大值。
+若要取出每一行的最小或最大值则要使用.min(1)或.max(1)。
+
+六、python3中print的用法
+print("....{0}".format())
