@@ -1,5 +1,6 @@
 from numpy import *
 import operator
+from os import listdir
 def createDataSet():
     group = array([[1.0, 0.9], [1.0, 1.0], [0.1, 0.2], [0.0, 0.1]])
     labels = ['A', 'A', 'B', 'B']  # four samples and two classes
@@ -87,6 +88,49 @@ def classifyPerson():
     inArr=array([ffMiles,percentats,iceCream])
     classifierResult=classify0((inArr-minVals)/ranges,normMat,datingLabels,3)
     print("You will probably like this person:{0}".format(resultList[classifierResult-1]))
+
+
+#手写数字识别系统
+#将32*32的图像矩阵转换为1*1024的向量
+def img2vector(filename):
+    returnVect=zeros((1,1024))
+    fr=open(filename)
+    for i in range(32):
+        #读取一行返回字符串
+        lineStr=fr.readline()
+        for j in range(32):
+            returnVect[0,32*i+j]=int(lineStr[j])
+    return returnVect
+
+def handwritingClassTest() :
+    hwLabels = []
+    #获取目录内容
+    trainingFileList = listdir('D:\\Python\\MachineLearning\\machinelearninginaction\\Ch02\\trainingDigits')
+    m = len(trainingFileList)
+    trainingMat = zeros((m, 1024))
+    for i in range(m) :
+        fileNameStr = trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0] #无后缀文件名
+        classNumStr = int(fileStr.split('_')[0]) #获取文件内的数字
+        hwLabels.append(classNumStr)
+        #图片转换为向量
+        trainingMat[i, :] = img2vector('D:\\Python\\MachineLearning\\machinelearninginaction\\Ch02\\trainingDigits\\%s' %fileNameStr)
+    testFileList = listdir('D:\\Python\\MachineLearning\\machinelearninginaction\\Ch02\\testDigits')
+    errorCount = 0.0
+    mTest = len(testFileList)
+    for i in range(mTest):
+        fileNameStr = testFileList[i]
+        fileStr = fileNameStr.split('.')[0]
+        classNumStr = int(fileStr.split('_')[0])
+        vectorUnderTest = img2vector('D:\\Python\\MachineLearning\\machinelearninginaction\\Ch02\\testDigits\\%s' %fileNameStr)
+        classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 3) #分类
+        print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, classNumStr))
+        if (classifierResult != classNumStr) :
+            errorCount += 1.0
+    print("\nthe total number of error is: %d" %errorCount)
+    print("\nthe total error rate is: %f" %(errorCount/float(mTest)))
+if __name__=='__main__':
+    handwritingClassTest()
 
 
 
