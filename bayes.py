@@ -85,6 +85,67 @@ def testingNB():
     thisDoc1 = array(setOfWords2Vec(myVocabList, testEntry1))
     print(testEntry1, 'classified as:', classifyNB(thisDoc1, p0V, p1V, pAb))
 
+#朴素贝叶斯词袋模型（词向量中的对应值不是0,1，而是该单词出现的次数
+def bagOfWords2VecMN(vocabList,inputSet):
+    returnVec=[0]*len(vocabList)
+    for word in inputSet:
+        if word in vocabList:
+            returnVec[vocabList.index(word)]+=1
+    return returnVec
+
+#贝叶斯分类器已经建好，现在使用朴素贝叶斯过滤垃圾邮件
+
+#将大字符串解析为字符串列表，（使用正则表达式），去除小于两个字符的字符串并且字符串转为小写
+def textParse(bigString):
+    import re
+    listOfTokens=re.split(r'\W*',bigString)
+    return [tok.lower() for tok in listOfTokens if len(tok)>2]
+
+#email\ham中的23.txt中第二段多了一个问号，导致解码失败，删除‘？’之后便可以继续执行。
+def spamTest():
+    docList=[]
+    classList=[]
+    fullText=[]
+    for i in range(1,26):
+        #解析第i封垃圾邮件
+        wordList=textParse(open('D:\\Python\\MachineLearning\\machinelearninginaction\\Ch04\\email\\spam\\%d.txt' %i,encoding='gb18030').read())
+        #加入文档列表
+        docList.append(wordList)
+        fullText.extend(wordList)
+        classList.append(1)
+        wordList=textParse(open('D:\\Python\\MachineLearning\\machinelearninginaction\\Ch04\\email\\ham\\%d.txt' %i,encoding='gb18030').read())
+        docList.append(wordList)
+        fullText.extend(wordList)
+        classList.append(0)
+    vocabList=createVocabList(docList)
+    #python3.x   range返回的是range对象，不返回数组对象
+    trainingSet=list(range(50))
+    testSet=[]
+    #随机生成训练集
+    for i in range(10):
+        randIndex=int(random.uniform(0,len(trainingSet)))
+        testSet.append(trainingSet[randIndex])
+        del(trainingSet[randIndex])
+    trainMat=[]
+    trainClasses=[]
+    for docIndex in trainingSet:
+        #将训练集中的文档转为词条向量存入训练矩阵中
+        trainMat.append(setOfWords2Vec(vocabList,docList[docIndex]))
+        trainClasses.append(classList[docIndex])
+    p0V,p1V,pSpam=trainNBO(array(trainMat),array(trainClasses))
+    errorCount=0
+    for docIndex in testSet:
+        wordVector=setOfWords2Vec(vocabList,docList[docIndex])
+        if classifyNB(array(wordVector),p0V,p1V,pSpam)!=classList[docIndex]:
+            errorCount+=1
+    print('the error rate is :',float(errorCount)/len(testSet))
+
+if __name__ == '__main__':
+    spamTest()
+
+
+
+
 
 
 
